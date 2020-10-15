@@ -20,7 +20,14 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     LPModel = grb.Model(problem_name+str(insid)+"_LP")   
     LPModel.modelSense = grb.GRB.MAXIMIZE
     print('LP Solver timelimit:',timelimit)
+        Projectslist = set(range(len(insid.getProjects())))
     
+    for Project in insid.getProject():
+        vname="X_"+str(Project.getID())
+        Project.setExecVar(LPModel.addVar( vtype=grb.GRB.BINARY,name = vname))
+       
+        
+    for Employee in insid.getEmployee():
     #  Creating decision variables..
         
  
