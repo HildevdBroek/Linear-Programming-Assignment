@@ -20,42 +20,64 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     print('LP Solver timelimit:',timelimit)
     
 
-    # employee busy vars z_{e,t} 
-    # iterate employees and use for each emplpoyee TimeSet
-    # Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t for t = 1, 2, . . . , ∣T∣.
-    # ze,t binary variable indicating that employee e ∈ E is busy at time t ∈ T, employee.getBusyVars()
-    
+# employee busy vars z_{e,t} 
+#iterate employees and use for each emplpoyee TimeSet Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t  employee.getBusyVars()
+
     TimeSet = list(range(Employees[0].getAvailability()))
-    SkillSet = list(range(Employees[0].getSkills()))
     for emp in Employees:
        Employeeavailablevars = LPModel.addVars(TimeSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getID()))
+        #employee.setExecVar(LPModel.addVar( vtype=grb.GRB.BINARY,name = vname))      
+    Employeeavailable = Employee.getBusyVars(Employeeavailablevars.values())
+   
+    
+#λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
 
-    emp.setBusyVars(Employeeavailablevars.values())
-    
-    # assignvars x_{e,p}, project start vars theta_{p,t}, and lambda var \lambda_{p,p'}
-    #xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()
-    Projectslist = set(range(0, len(insid.getProjects())))
-    
+    counter = 0
     for Project in insid.getProject():
-        vname="X_"+str(Project.getID())
-        #place.setOpeningvar(LPModel.addVar(obj = place.getCost(), vtype=grb.GRB.BINARY,name = vname))
-        #klopt deze?        
-        Project.setExecVar(LPModel.addVar( vtype=grb.GRB.BINARY,name = vname))
-       
+        counter = counter + 1
+        TimeSet1 = list(range(Projects[0].getLambdavars()))
+        TimeSet2 = list(range(Projects[counter].getLambdavars()))
+        if TimeSet1 == TimeSet2:
+            
+            print("p = p'")
+        else:
+            OtherProjs = set(range(Project.getID()+1,len(Projects)))
+            lambdavars = LPModel.addVars(OtherProjs,vtype=grb.GRB.BINARY, name="lmbd_"+str(Project.getID()))
+            Project.getLambdaVars(lambdavars.values())            
+    
+#θp,t indicates that project p start in time t project.getStartVars()
+#Project starts We consider every time unit as potential for a project start and define the binary variable θp,t indicating that project p starts at time t.   
+    TimeSetproject = list(range(Project[0].getAvailability()))
+    if Project in TimeSetproject == True:
+        θname="θ_"+str(Project.getID())
+    else:
+        print("θ not in t")
         
+
+# assignvars x_{e,p}, project start vars theta_{p,t}, and lambda var \lambda_{p,p'}
+#xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()
+    
+    Projectslist = list(range(Projects[0], len(insid.getProjects())))
+    SkillSet = list(range(Employees[0].getSkills())) 
+    
     for emp in insid.getEmployee():
-        #skills van employee checken met de skillsrequirements van project
-        Employeeprojectvars = LPModel.addVars(Projectslist.obj = [(emp.getSkills(),Proj.Skillsrequirements()) for Proj in insid.getProj()], vtype=grb.GRB.BINARY, name="x_"+str(emp.getID()))
-        #SkillSet = set(range(len(Employees[0].getSkills())))
-        Emp.getEmployeeprojectVars(Employeeproject.values())
-     #θp,t indicates that project p start in time t project.getStartVars()
-     #Project starts We consider every time unit as potential for a project start and define the binary variable θp,t indicating that project p starts at time t.   
+        Employeesskills = LPModel.addVars(SkillSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getskills()))  
+        
     
-    #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
-    
+    for projects in Projects:
+        skills = list(range(Projects[0].getSkillRequirements))
+        if Employeesskills == skills:
+            empvars = LPModel.addVars(Employeesskills, vtype=grb.GRB.BINARY, name="Z_"+str(Project.getID()))
+            Employee.getProjectVars(empvars.values())
+        else:
+            print("fout")
+ 
+            
+
     # Creating decision variables.. 
      
     LPModel.update()
+    return SolveLPMOdel()
         
     # Construct constraints 
         
@@ -85,9 +107,11 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     
     #LPModel.write(problem_name+str(insid)+'.lp')
     print('--------------------------------------------------------------')
-    
    
     return Projects,Employees,LPModel
+
+
+
 ####################################################################################
 
 # problem_name = "ProjectScheduling"  
