@@ -25,7 +25,8 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     # Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t for t = 1, 2, . . . , ∣T∣.
     # ze,t binary variable indicating that employee e ∈ E is busy at time t ∈ T, employee.getBusyVars()
     
-    TimeSet = set(range(len(Employees[0].getAvailability()))) 
+    TimeSet = list(range(Employees[0].getAvailability()))
+    SkillSet = list(range(Employees[0].getSkills()))
     for emp in Employees:
        Employeeavailablevars = LPModel.addVars(TimeSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getID()))
 
