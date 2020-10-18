@@ -14,30 +14,27 @@ from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure,Sol
 def Question(Projects,Employees,problem_name,insid,timelimit):
 
     print('--------------------------------------------------------------')
- 
     LPModel = grb.Model(problem_name+str(insid)+"_LP")   
     LPModel.modelSense = grb.GRB.MAXIMIZE
     print('LP Solver timelimit:',timelimit)
-    
+
 
 # employee busy vars z_{e,t} 
 #iterate employees and use for each emplpoyee TimeSet Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t  employee.getBusyVars()
     
-    
-    for emp in Employees:
-       TimeSet = list(range(Employees[0].getAvailability()))
+    TimeSet = list(range(Employee.getAvailability()))
+    for emp in Employee.getAvailability():
        Employeeavailablevars = LPModel.addVars(TimeSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getID()))
         #employee.setExecVar(LPModel.addVar( vtype=grb.GRB.BINARY,name = vname))      
     Employeeavailable = Employee.getBusyVars(Employeeavailablevars.values())
    
     
 #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
-
     counter = 0
-    for Project in insid.getProject():
+    for Project in Projects:
         counter = counter + 1
-        TimeSet1 = list(range(Projects[0].getLambdavars()))
-        TimeSet2 = list(range(Projects[counter].getLambdavars()))
+        TimeSet1 = list(range(Projects[0].getLambdaVars()))
+        TimeSet2 = list(range(Projects[counter].getLambdaVars()))
         if TimeSet1 == TimeSet2:
             
             print("p = p'")
