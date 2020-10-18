@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 13 21:37:05 2020
-1BK50-2020 LP Assignment Library
-
-
-"""
-
 import csv
 import pandas as pd
 import gurobipy as grb
