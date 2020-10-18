@@ -12,7 +12,7 @@ from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure,Sol
 
 ###############################################################################
 def Question(Projects,Employees,problem_name,insid,timelimit):
-    
+
     print('--------------------------------------------------------------')
  
     LPModel = grb.Model(problem_name+str(insid)+"_LP")   
@@ -22,9 +22,10 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 
 # employee busy vars z_{e,t} 
 #iterate employees and use for each emplpoyee TimeSet Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t  employee.getBusyVars()
-
-    TimeSet = list(range(Employees[0].getAvailability()))
+    
+    
     for emp in Employees:
+       TimeSet = list(range(Employees[0].getAvailability()))
        Employeeavailablevars = LPModel.addVars(TimeSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getID()))
         #employee.setExecVar(LPModel.addVar( vtype=grb.GRB.BINARY,name = vname))      
     Employeeavailable = Employee.getBusyVars(Employeeavailablevars.values())
@@ -111,27 +112,26 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     return Projects,Employees,LPModel
 
 
-
 ####################################################################################
 
-# problem_name = "ProjectScheduling"  
-# timelimit = 60
+problem_name = "ProjectScheduling"  
+timelimit = 60
 
-# instances = [1]
+instances = [1]
 
-# print('--> 1BK50 LP Assignment Template<--')
-# print('--> Important: Uncomment these lines to start working!',problem_name)
+print('--> 1BK50 LP Assignment Template<--')
+print('--> Important: Uncomment these lines to start working!',problem_name)
 
-# for insid in instances:          
-#     print('Problem instance: ',insid)       
-#     Projects,Employees = ConstructDataStructure(problem_name,insid)   
-#     Projects,Employees,LPModel = Question(Projects,Employees,problem_name,insid,timelimit)  
-#     LPModel,Projects,Employees,feedback,fgrade,varscore = SolveLPMOdel(LPModel,Projects,Employees,timelimit,insid)
+for insid in instances:          
+    print('Problem instance: ',insid)       
+    Projects,Employees = ConstructDataStructure(problem_name,insid)   
+    Projects,Employees,LPModel = Question(Projects,Employees,problem_name,insid,timelimit)  
+    LPModel,Projects,Employees,feedback,fgrade,varscore = SolveLPMOdel(LPModel,Projects,Employees,timelimit,insid)
  
-#     for feed in feedback:
-#         print(feed)
+    for feed in feedback:
+         print(feed)
       
-# print('--> Important: Submit your file by making it back commented!')
+#print('--> Important: Submit your file by making it back commented!')
 
 
 
