@@ -22,29 +22,29 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 #iterate employees and use for each emplpoyee TimeSet Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t  employee.getBusyVars()
     
     for emp in Employees:
-        TimeSet = list(range(len(emp.getAvailability())))
+        TimeSetEmp = list(range(len(emp.getAvailability())))
         vname = "z_" + str(emp.getID())
-        emp.setBusyVars(LPModel.addVars(TimeSet, vtype=grb.GRB.BINARY, name = vname))
+        emp.setBusyVars(LPModel.addVars(TimeSetEmp, vtype=grb.GRB.BINARY, name = vname))
         print("Z works")
     
 #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
 
     for Project in Projects:
-        TimeSet2 = list(range(len(Project.getCoincindingProjects())))
+        TimeSetLambda = list(range(len(Project.getCoincindingProjects())))
         print("p = p'")
         #OtherProjs = set(range(Project.getID()+1,len(Projects)))
         lname = "lmbd_"+str(Project.getID())
-        Project.setLambdaVars(LPModel.addVars(TimeSet2, vtype=grb.GRB.BINARY, name=lname))      
+        Project.setLambdaVars(LPModel.addVars(TimeSetLambda, vtype=grb.GRB.BINARY, name=lname))      
         print("lambda works")
     
 #θp,t indicates that project p start in time t project.getStartVars()
 #Project starts We consider every time unit as potential for a project start and define the binary variable θp,t indicating that project p starts at time t.   
-    TimeSetproject = list(range(Project[0].getAvailability()))
-    if Project in TimeSetproject == True:
-        θname="θ_"+str(Project.getID())
-    else:
-        print("θ not in t")
-        
+
+    for Project in Projects:
+        TimeSetTheta = list(range(Project.getStartTime()))
+        Tname = "Theta_"+str(Project.getID())
+        Project.setStartVars(LPModel.addVars(TimeSetTheta, vtype=grb.GRB.BINARY, name=Tname))      
+        print("Theta works")               
 
 # assignvars x_{e,p}, project start vars theta_{p,t}, and lambda var \lambda_{p,p'}
 #xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()
