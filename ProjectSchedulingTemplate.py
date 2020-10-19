@@ -24,68 +24,59 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     for emp in Employees:
         TimeSetEmp = list(range(len(emp.getAvailability())))
         vname = "z_" + str(emp.getID())
-        emp.setBusyVars(LPModel.addVars(TimeSetEmp, vtype=grb.GRB.BINARY, name = vname))
-        print("Z works")
+        Busy = LPModel.addVars(TimeSetEmp, vtype=grb.GRB.BINARY, name = vname)
+        emp.setBusyVars(Busy.values())
+        #print("Z works")
     
 #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
 
     for Project in Projects:
-        TimeSetLambda = list(range(len(Project.getCoincindingProjects())))
-        print("p = p'")
-        #OtherProjs = set(range(Project.getID()+1,len(Projects)))
+        #TimeSetLambda = list(range(len(Project.getCoincindingProjects())))
+        OtherProjs = list(range(Project.getID()+1, len(Projects)))
         lname = "lambda_"+str(Project.getID())
-        Project.setLambdaVars(LPModel.addVars(TimeSetLambda, vtype=grb.GRB.BINARY, name=lname))      
-        print("lambda works")
+        lambdavars = LPModel.addVars(OtherProjs,vtype=grb.GRB.BINARY, name=lname)
+        Project.setLambdaVars(lambdavars.values())    
+        #print("lambda works")
     
 #θp,t indicates that project p start in time t project.getStartVars()
 #Project starts We consider every time unit as potential for a project start and define the binary variable θp,t indicating that project p starts at time t.   
 
     for Project in Projects:
-        TimeSetTheta = list(range(Project.getStartTime()))
+        TimeSetTheta = list(range(len(Employees[0].getAvailability())))
         Tname = "Theta_"+str(Project.getID())
-        Project.setStartVars(LPModel.addVars(TimeSetTheta, vtype=grb.GRB.BINARY, name=Tname))      
-        print("Theta works")               
+        Theta = LPModel.addVars(TimeSetTheta, vtype=grb.GRB.BINARY, name=Tname)
+        Project.setStartVars(Theta.values())      
+        #print("Theta works")               
 
 # assignvars x_{e,p}, project start vars theta_{p,t}, and lambda var \lambda_{p,p'}
-#xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()
-    
-  #  Projectslist = list(range(Projects[0], len(insid.getProjects())))
-  #  SkillSet = list(range(Employees[0].getSkills()))         
-    
+#xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()      
+
     for Project in Projects:
-        skills = list(range(len(Project.getSkillRequirements())))
-        print("Skills requirements")    
-        
-    for emp in Employees:
-        Employeesskills = list(range(len(emp.getSkills())))
-        print ("employeeskills")
-        intersect = intersection(skills, Employeesskills)
         pname = "X_"+str(Project.getID())
-        Team = Project.setAssignmentVars(LPModel.addVars(intersect, vtype=grb.GRB.BINARY, name=pname))
-           
-        #if Employeesskills == skills:
-          #  pname = "X_"+str(Project.getID())
-          #  empvars = emp.getSkills(LPModel.addVars(skills, vtype=grb.GRB.BINARY, name=pname))
-          # emp.setAssignmentVars(empvars.values())
-          #  print("X works")     
-        #else:
-         #   print("fout")
-    
-
-         
-         
-    return Projects, Employees, timelimit   
-
+        EmployeeProject = LPModel.addVars((list(range(len(Employees)))), vtype=grb.GRB.BINARY, name=pname)
+        Project.setAssignmentVars(EmployeeProject.values())
+        #print("X works")  
+        
+        
+        
+    # objective funtion  2.1 (verwerken in decison variablen) - Nicole 
 
     # Creating decision variables.. 
      
     LPModel.update()
-    
-    return SolveLPMOdel()
+    return Projects, Employees, LPModel
+    #return SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
+
         
     # Construct constraints 
         
-    # constrains (2.2):
+        #for emp in Employees:
+        #Employeesskills = list(range(len(emp.getSkills())))
+        #print ("employeeskills")
+                #skills = list(range(len(Project.getSkillRequirements())))
+                   
+        #intersect = len(intersection(skills, Employeesskills))
+    # constrains (2.2): - Hilde
           
     # constraints (2.3):  
     
