@@ -8,7 +8,7 @@ Created on Sat Oct  3 11:05:33 2020
 import gurobipy as grb
 import pandas as pd
 import time
-from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure,SolveLPMOdel
+from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure, intersection, SolveLPMOdel
 
 ###############################################################################
 def Question(Projects,Employees,problem_name,insid,timelimit):
@@ -33,7 +33,7 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
         TimeSetLambda = list(range(len(Project.getCoincindingProjects())))
         print("p = p'")
         #OtherProjs = set(range(Project.getID()+1,len(Projects)))
-        lname = "lmbd_"+str(Project.getID())
+        lname = "lambda_"+str(Project.getID())
         Project.setLambdaVars(LPModel.addVars(TimeSetLambda, vtype=grb.GRB.BINARY, name=lname))      
         print("lambda works")
     
@@ -49,26 +49,38 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 # assignvars x_{e,p}, project start vars theta_{p,t}, and lambda var \lambda_{p,p'}
 #xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()
     
-    Projectslist = list(range(Projects[0], len(insid.getProjects())))
-    SkillSet = list(range(Employees[0].getSkills())) 
+  #  Projectslist = list(range(Projects[0], len(insid.getProjects())))
+  #  SkillSet = list(range(Employees[0].getSkills()))         
     
-    for emp in insid.getEmployee():
-        Employeesskills = LPModel.addVars(SkillSet, vtype=grb.GRB.BINARY, name="z_"+str(emp.getskills()))  
+    for Project in Projects:
+        skills = list(range(len(Project.getSkillRequirements())))
+        print("Skills requirements")    
         
+    for emp in Employees:
+        Employeesskills = list(range(len(emp.getSkills())))
+        print ("employeeskills")
+        intersect = intersection(skills, Employeesskills)
+        pname = "X_"+str(Project.getID())
+        Team = Project.setAssignmentVars(LPModel.addVars(intersect, vtype=grb.GRB.BINARY, name=pname))
+           
+        #if Employeesskills == skills:
+          #  pname = "X_"+str(Project.getID())
+          #  empvars = emp.getSkills(LPModel.addVars(skills, vtype=grb.GRB.BINARY, name=pname))
+          # emp.setAssignmentVars(empvars.values())
+          #  print("X works")     
+        #else:
+         #   print("fout")
     
-    for projects in Projects:
-        skills = list(range(Projects[0].getSkillRequirements))
-        if Employeesskills == skills:
-            empvars = LPModel.addVars(Employeesskills, vtype=grb.GRB.BINARY, name="Z_"+str(Project.getID()))
-            Employee.getProjectVars(empvars.values())
-        else:
-            print("fout")
- 
-            
+
+         
+         
+    return Projects, Employees, timelimit   
+
 
     # Creating decision variables.. 
      
     LPModel.update()
+    
     return SolveLPMOdel()
         
     # Construct constraints 
@@ -108,7 +120,7 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 problem_name = "ProjectScheduling"  
 timelimit = 60
 
-instances = [1]
+instances = [1, 2, 3, 4]
 
 print('--> 1BK50 LP Assignment Template<--')
 print('--> Important: Uncomment these lines to start working!',problem_name)
