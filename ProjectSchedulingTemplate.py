@@ -8,7 +8,7 @@ Created on Sat Oct  3 11:05:33 2020
 import gurobipy as grb
 import pandas as pd
 import time
-from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure, intersection, SolveLPMOdel
+from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure, SolveLPMOdel
 
 ###############################################################################
 def Question(Projects,Employees,problem_name,insid,timelimit):
@@ -31,7 +31,6 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
 
     for Project in Projects:
-        #TimeSetLambda = list(range(len(Project.getCoincindingProjects())))
         OtherProjs = list(range(Project.getID()+1, len(Projects)))
         lname = "lambda_"+str(Project.getID())
         lambdavars = LPModel.addVars(OtherProjs,vtype=grb.GRB.BINARY, name=lname)
@@ -65,23 +64,21 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
      
     LPModel.update()
     return Projects, Employees, LPModel
-    #return SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
+    return SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
 
         
     # Construct constraints 
         
-        #for emp in Employees:
-        #Employeesskills = list(range(len(emp.getSkills())))
-        #print ("employeeskills")
-                #skills = list(range(len(Project.getSkillRequirements())))
-                   
-        #intersect = len(intersection(skills, Employeesskills))
-    # constrains (2.2): - Hilde
-          
-    # constraints (2.3):  
-    
-    # constraints (2.4):  
 
+    # constrains (2.2): - Hilde
+    #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
+    Aname = 'A_'+str(emp.getID())
+    LPModel.addConstr(((emp.getBusyVars() <= emp.getAvailability()) for emp in Employees), name = Aname)
+    # constraints (2.3):  
+
+    # constraints (2.4):  
+    #for Project in Projects:
+     #   LPModel.addConstr()
     # constraints (2.5): 
    
     # constraints (2.6):
@@ -91,7 +88,12 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     # constraints (2.8):
     
     # constraints (2.9):
-    
+                #for emp in Employees:
+        #Employeesskills = list(range(len(emp.getSkills())))
+        #print ("employeeskills")
+                #skills = list(range(len(Project.getSkillRequirements())))
+                   
+        #intersect = len(intersection(skills, Employeesskills))
     # constraints (2.10):
     
     # constraints (2.11):
@@ -120,7 +122,7 @@ for insid in instances:
     print('Problem instance: ',insid)       
     Projects,Employees = ConstructDataStructure(problem_name,insid)   
     Projects,Employees,LPModel = Question(Projects,Employees,problem_name,insid,timelimit)  
-    LPModel,Projects,Employees,feedback,fgrade,varscore = SolveLPMOdel(LPModel,Projects,Employees,timelimit,insid)
+    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel,Projects,Employees,timelimit,insid)
  
     for feed in feedback:
          print(feed)
