@@ -43,7 +43,7 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     for Project in Projects:
         TimeSetTheta = list(range(len(Employees[0].getAvailability())))
         Tname = "Theta_"+str(Project.getID())
-        Theta = LPModel.addVars(TimeSetTheta, vtype=grb.GRB.BINARY, name=Tname)
+        Theta = LPModel.addVars(TimeSetTheta, obj=Project.getWeight(), vtype=grb.GRB.BINARY, name=Tname)
         Project.setStartVars(Theta.values())      
         #print("Theta works")               
 
@@ -55,17 +55,9 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
         EmployeeProject = LPModel.addVars((list(range(len(Employees)))), vtype=grb.GRB.BINARY, name=pname)
         Project.setAssignmentVars(EmployeeProject.values())
         #print("X works")  
-        
-        
-        
-    # objective funtion  2.1 (verwerken in decison variablen) - Nicole 
-
-    # Creating decision variables.. 
      
     LPModel.update()
     return Projects, Employees, LPModel
-    return SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
-
         
     # Construct constraints 
         
@@ -74,29 +66,29 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
     Aname = 'A_'+str(emp.getID())
     LPModel.addConstr(((emp.getBusyVars() <= emp.getAvailability()) for emp in Employees), name = Aname)
-    # constraints (2.3):  
+    # constraints (2.3):  - Nicole
 
-    # constraints (2.4):  
-    #for Project in Projects:
-     #   LPModel.addConstr()
-    # constraints (2.5): 
+    # constraints (2.4):  - Nicole
+
+    # constraints (2.5):  - Nicole
    
-    # constraints (2.6):
+    # constraints (2.6): - Hilde
  
-    # constraints (2.7):
+    # constraints (2.7):  - Nicole
              
-    # constraints (2.8):
+    # constraints (2.8):   - Hilde
     
-    # constraints (2.9):
+    # constraints (2.9):  - Nicole
+        #was een probeersel van eerdere decision variabelen:
                 #for emp in Employees:
         #Employeesskills = list(range(len(emp.getSkills())))
         #print ("employeeskills")
                 #skills = list(range(len(Project.getSkillRequirements())))
                    
         #intersect = len(intersection(skills, Employeesskills))
-    # constraints (2.10):
+    # constraints (2.10):  - Hilde
     
-    # constraints (2.11):
+    # constraints (2.11):  - Nicole
                                     
     # Construct constraints
     
