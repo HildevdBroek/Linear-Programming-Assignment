@@ -11,12 +11,12 @@ import time
 from ProjectschedulingLibrary import Project,Employee,ConstructDataStructure, SolveLPMOdel
 
 ###############################################################################
-def Question(Projects,Employees,problem_name,insid,timelimit):
+def Question(Projects, Employees, problem_name, insid, timelimit):
 
     print('--------------------------------------------------------------')
-    LPModel = grb.Model(problem_name+str(insid)+"_LP")   
-    LPModel.modelSense = grb.GRB.MAXIMIZE
-    print('LP Solver timelimit:',timelimit)
+    LPModel = grb.Model(problem_name + str(insid) + "_LP")   
+    LPModel.modelSense = grb.GRB.MAXIMIZE #2.1
+    print('LP Solver timelimit:', timelimit)
 
 # employee busy vars z_{e,t} 
 #iterate employees and use for each emplpoyee TimeSet Employee busy/idle times The binary variable ze,t indicates that employee e is busy at time unit t  employee.getBusyVars()
@@ -24,7 +24,7 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     for emp in Employees:
         TimeSetEmp = list(range(len(emp.getAvailability())))
         vname = "z_" + str(emp.getID())
-        Busy = LPModel.addVars(TimeSetEmp, vtype=grb.GRB.BINARY, name = vname)
+        Busy = LPModel.addVars(TimeSetEmp, vtype = grb.GRB.BINARY, name = vname)
         emp.setBusyVars(Busy.values())
         #print("Z works")
     
@@ -32,8 +32,8 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 
     for Project in Projects:
         OtherProjs = list(range(Project.getID()+1, len(Projects)))
-        lname = "lambda_"+str(Project.getID())
-        lambdavars = LPModel.addVars(OtherProjs,vtype=grb.GRB.BINARY, name=lname)
+        lname = "lambda_" + str(Project.getID())
+        lambdavars = LPModel.addVars(OtherProjs, vtype = grb.GRB.BINARY, name = lname)
         Project.setLambdaVars(lambdavars.values())    
         #print("lambda works")
     
@@ -42,8 +42,8 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 
     for Project in Projects:
         TimeSetTheta = list(range(len(Employees[0].getAvailability())))
-        Tname = "Theta_"+str(Project.getID())
-        Theta = LPModel.addVars(TimeSetTheta, obj=Project.getWeight(), vtype=grb.GRB.BINARY, name=Tname)
+        Tname = "Theta_" + str(Project.getID())
+        Theta = LPModel.addVars(TimeSetTheta, obj = Project.getWeight(), vtype = grb.GRB.BINARY, name = Tname)
         Project.setStartVars(Theta.values())      
         #print("Theta works")               
 
@@ -51,27 +51,39 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
 #xe,p assignment variable of employee e ∈ E to project p ∈ P project.getAssignmentVars()      
 
     for Project in Projects:
-        pname = "X_"+str(Project.getID())
-        EmployeeProject = LPModel.addVars((list(range(len(Employees)))), vtype=grb.GRB.BINARY, name=pname)
+        pname = "X_" + str(Project.getID())
+        EmployeeProject = LPModel.addVars((list(range(len(Employees)))), vtype = grb.GRB.BINARY, name = pname)
         Project.setAssignmentVars(EmployeeProject.values())
         #print("X works")  
+        
+    #LPModel.setObjective(sum(Knapsackitems.iloc[i][2]*myvars[i] for i in items)) 
      
     LPModel.update()
     return Projects, Employees, LPModel
         
     # Construct constraints 
-        
+#def ConstructConstraints(insid, LPModel):       
 
     # constrains (2.2): - Hilde
     #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
-    Aname = 'A_'+str(emp.getID())
+    Aname = 'A_' + str(emp.getID())
     LPModel.addConstr(((emp.getBusyVars() <= emp.getAvailability()) for emp in Employees), name = Aname)
+    
     # constraints (2.3):  - Nicole
+    M = 10000
+    Mname = 'M_' + str(Project.getID())
+    LPModel.addConstr(((sum(Project.getAssignmentVars()) <= M * sum(Project.getStartVars())) for Project in Projects), name = Mname)
 
     # constraints (2.4):  - Nicole
-
+    D1name = 'D1' + str(Project.getID())
+    
     # constraints (2.5):  - Nicole
-   
+    D2name = 'D2' + str(Project.getID())
+    
+    for Project in Projects:
+        LPModel.addConstr((sum(Project.getStartVars()[Project.getID()] <= 1)), name = D1name)
+        LPModel.addConstr((sum(Project.getStartVars()[Project.getID()] == 0)), name = D2name)
+        
     # constraints (2.6): - Hilde
  
     # constraints (2.7):  - Nicole
@@ -89,9 +101,9 @@ def Question(Projects,Employees,problem_name,insid,timelimit):
     # constraints (2.10):  - Hilde
     
     # constraints (2.11):  - Nicole
+    
                                     
     # Construct constraints
-    
     
     
     #LPModel.write(problem_name+str(insid)+'.lp')
