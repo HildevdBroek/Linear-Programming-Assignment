@@ -107,13 +107,24 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
       #  LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1) <= lambdas[z]) for k in range(len(sommetjes[z]))) for z in range(index+1, len(sommetjes))), name = D3name)
        # index += 1
 
-        
-        
     # constraints (2.7):  - Nicole
+    timelist = []
+    for time in TimeSetTheta:
+        timelist.append(time)
+        
+        #for t2 in range(Project.getID() + 1, len(insid.getStartVars())):
+         #   time2 = insid.getStartVars()[t2]
+          #  if time2.getStartVars() == (Project.getStartVars()[max(0, time - Project.getDuration() + 1]):
+           #     continue
+            #for Project in Projects:
+             #   Kname = 'K_' + str(Project.getID()) + str(time.getID()) + str(time2.getID())
+               # LPModel.addConstr(sum(Project.getStartVars()) + Project.getAssignmentVars() - 1 <= emp.getBusyVars(), name = Kname)
+        
              
     # constraints (2.8):   - Hilde
     
     # constraints (2.9):  - Nicole
+    
         #was een probeersel van eerdere decision variabelen:
                 #for emp in Employees:
         #Employeesskills = list(range(len(emp.getSkills())))
