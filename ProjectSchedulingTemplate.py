@@ -31,7 +31,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 #λp,p′ indicates that projects p and p’ have overlap in time p, p′ ∈ P project.getLambdaVars()
 
     for Project in Projects:
-        OtherProjs = list(range(Project.getID()+1, len(Projects)))
+        OtherProjs = list(range(Project.getID() + 1, len(Projects)))
         lname = "lambda_" + str(Project.getID())
         lambdavars = LPModel.addVars(OtherProjs, vtype = grb.GRB.BINARY, name = lname)
         Project.setLambdaVars(lambdavars.values())    
@@ -124,6 +124,14 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # constraints (2.8):   - Hilde
     
     # constraints (2.9):  - Nicole
+    EmpSkill = list(range(len(emp.getSkills())))
+    ProjSkill = list(range(len(Project.getSkillRequirements())))
+    
+    Sname = 'S_' + str(Project.getID())
+    for emp in Employees:
+        if (EmpSkill in ProjSkill) or (ProjSkill in EmpSkill):
+            continue
+        #LPModel.addConstr(sum(emp.getSkills() * Project.getAssignmentVars()) >= Project.getSkillRequirements * sum(Project.getStartVars()))
     
         #was een probeersel van eerdere decision variabelen:
                 #for emp in Employees:
