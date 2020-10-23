@@ -89,23 +89,20 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
    # for emp in Employees:       
    # for Project in Projects:
-      #  
-           # Thetasum = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1):t])
-             #   nm = 'bsyt_'+str(proj.getID())+'_'+str(emp.getID())+'_'+str(t)
-                #Theta2 = LPModel.addConstr(((Thetasum+Project.getAssignmentVars()[emp.getID()]-1) <= emp.getBusyVars()[t]), name = D3name)
-           # LPModel.addConstr((Thetasum + (Thetasum - 1) <= Project.getLambdaVars()), name = D3name)
     
     sommetjes = []
     for Project in Projects:
-        sommie = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1)] for t in TimeSetTheta)
+        sommie = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
         sommetjes.append(sommie)
     
     index = 0
-    #for Project in Projects:
-     #   som = sommetjes[index]
-      #  lambdas = Project.getLambdaVars()
-      #  LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1) <= lambdas[z]) for k in range(len(sommetjes[z]))) for z in range(index+1, len(sommetjes))), name = D3name)
-       # index += 1
+    for Project in Projects:
+        index += 1
+        som = sommetjes[index]
+        lambdas = Project.getLambdaVars()
+        for z in range(index+1, (len(sommetjes))):
+            LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1)) <= lambdas[z]) for k in sommetjes[z]), name = D3name)
+            
 
     # constraints (2.7):  - Nicole
     timelist = []
@@ -122,6 +119,13 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         
              
     # constraints (2.8):   - Hilde
+    for employee in Employees:
+        for proj in range(len(Projects)):
+            project=Projects[proj]
+            
+         #   for projnext in range (proj+1, len(Projects)):
+          #      LPModel.addConstr((project.getAssignmentVars()[proj]) + (project.getAssignmentVars()[projnext]) + (project.getLambdaVars()[projnext-projind-1]) <= 2)
+    LPModel.update()
     
     # constraints (2.9):  - Nicole
     EmpSkill = list(range(len(emp.getSkills())))
