@@ -55,16 +55,13 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         EmployeeProject = LPModel.addVars((list(range(len(Employees)))), vtype = grb.GRB.BINARY, name = pname)
         Project.setAssignmentVars(EmployeeProject.values())
         #print("X works")  
-        
-    #LPModel.setObjective(sum(Knapsackitems.iloc[i][2]*myvars[i] for i in items)) 
      
     LPModel.update()
-  #  return Projects, Employees, LPModel
+    #return Projects, Employees, LPModel
         
-    # Construct constraints 
-#def ConstructConstraints(insid, LPModel):       
+    # Construct constraints        
 
-    # constrains (2.2): - Hilde
+    # constraints (2.2): - Hilde
     #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
     Aname = 'A_' + str(emp.getID())
     for i in range(len(emp.getBusyVars())):
@@ -73,20 +70,22 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # constraints (2.3):  - Nicole
     M = 10000
     Mname = 'M_' + str(Project.getID())
-    LPModel.addConstr(((sum(Project.getAssignmentVars()) <= M * sum(Project.getStartVars())) for Project in Projects), name = Mname)
+    for Project in Projects:
+        LPModel.addConstr((sum(Project.getAssignmentVars()) <= (M * sum(Project.getStartVars()))), name = Mname)
 
     # constraints (2.4):  - Nicole
-    D1name = 'D1' + str(Project.getID())
+    D1name = 'D1_' + str(Project.getID())
+    #for Project in Projects:
+     #   LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) <= 1), name = D1name)
+        
     
     # constraints (2.5):  - Nicole
     D2name = 'D2' + str(Project.getID())
-    
-    for Project in Projects:
-        LPModel.addConstr((sum(Project.getStartVars()[Project.getID()] <= 1)), name = D1name)
-        LPModel.addConstr((sum(Project.getStartVars()[Project.getID()] == 0)), name = D2name)
+    #for Project in Projects:
+     #   LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) == 0), name = D2name)
         
     # constraints (2.6): - Hilde
-    D3name = 'D3' + str(Project.getID())
+    D3name = 'D3_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
    # for emp in Employees:       
    # for Project in Projects:
@@ -95,17 +94,18 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
              #   nm = 'bsyt_'+str(proj.getID())+'_'+str(emp.getID())+'_'+str(t)
                 #Theta2 = LPModel.addConstr(((Thetasum+Project.getAssignmentVars()[emp.getID()]-1) <= emp.getBusyVars()[t]), name = D3name)
            # LPModel.addConstr((Thetasum + (Thetasum - 1) <= Project.getLambdaVars()), name = D3name)
+    
     sommetjes = []
     for Project in Projects:
-        sommie = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1)] for t in TimeSetTheta)
+        sommie = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1)] for t in TimeSetTheta)
         sommetjes.append(sommie)
     
     index = 0
-    for Project in Projects:
-        som = sommetjes[index]
-        lambas = Project.getLambaVars()
-        LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1) <= lambas[z]) for k in range(len(sommetjes[z]))) for z in range(index+1, len(sommetjes))), name = D3name)
-        index += 1
+    #for Project in Projects:
+     #   som = sommetjes[index]
+      #  lambdas = Project.getLambdaVars()
+      #  LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1) <= lambdas[z]) for k in range(len(sommetjes[z]))) for z in range(index+1, len(sommetjes))), name = D3name)
+       # index += 1
 
         
         
@@ -129,10 +129,10 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # Construct constraints
     
     
-    #LPModel.write(problem_name+str(insid)+'.lp')
+    LPModel.write(problem_name+str(insid)+'.lp')
     print('--------------------------------------------------------------')
     LPModel.update()
-    return Projects,Employees,LPModel
+    return Projects, Employees, LPModel
 
 
 ####################################################################################
@@ -143,18 +143,15 @@ timelimit = 60
 instances = [1, 2, 3, 4]
 
 print('--> 1BK50 LP Assignment Template<--')
-print('--> Important: Uncomment these lines to start working!',problem_name)
+print('--> Important: Uncomment these lines to start working!', problem_name)
 
 for insid in instances:          
-    print('Problem instance: ',insid)       
-    Projects,Employees = ConstructDataStructure(problem_name,insid)   
-    Projects,Employees,LPModel = Question(Projects,Employees,problem_name,insid,timelimit)  
-    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel,Projects,Employees,timelimit,insid)
- 
+    print('Problem instance: ', insid)       
+    Projects,Employees = ConstructDataStructure(problem_name, insid)   
+    Projects,Employees,LPModel = Question(Projects, Employees, problem_name, insid, timelimit)  
+    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
+    
     for feed in feedback:
          print(feed)
-      
-#print('--> Important: Submit your file by making it back commented!')
-
-
-
+         
+print('--> Important: Submit your file by making it back commented!')
