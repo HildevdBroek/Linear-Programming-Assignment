@@ -59,7 +59,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     #LPModel.setObjective(sum(Knapsackitems.iloc[i][2]*myvars[i] for i in items)) 
      
     LPModel.update()
-    return Projects, Employees, LPModel
+  #  return Projects, Employees, LPModel
         
     # Construct constraints 
 #def ConstructConstraints(insid, LPModel):       
@@ -67,8 +67,9 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # constrains (2.2): - Hilde
     #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
     Aname = 'A_' + str(emp.getID())
-    LPModel.addConstr(((emp.getBusyVars() <= emp.getAvailability()) for emp in Employees), name = Aname)
-    
+    for i in range(len(emp.getBusyVars())):
+        LPModel.addConstrs(((emp.getBusyVars()[i] <= emp.getAvailability()[i]) for emp in Employees), name = Aname)
+     
     # constraints (2.3):  - Nicole
     M = 10000
     Mname = 'M_' + str(Project.getID())
@@ -85,7 +86,29 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         LPModel.addConstr((sum(Project.getStartVars()[Project.getID()] == 0)), name = D2name)
         
     # constraints (2.6): - Hilde
- 
+    D3name = 'D3' + str(Project.getID())
+    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
+   # for emp in Employees:       
+   # for Project in Projects:
+      #  
+           # Thetasum = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1):t])
+             #   nm = 'bsyt_'+str(proj.getID())+'_'+str(emp.getID())+'_'+str(t)
+                #Theta2 = LPModel.addConstr(((Thetasum+Project.getAssignmentVars()[emp.getID()]-1) <= emp.getBusyVars()[t]), name = D3name)
+           # LPModel.addConstr((Thetasum + (Thetasum - 1) <= Project.getLambdaVars()), name = D3name)
+    sommetjes = []
+    for Project in Projects:
+        sommie = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1)] for t in TimeSetTheta)
+        sommetjes.append(sommie)
+    
+    index = 0
+    for Project in Projects:
+        som = sommetjes[index]
+        lambas = Project.getLambaVars()
+        LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1) <= lambas[z]) for k in range(len(sommetjes[z]))) for z in range(index+1, len(sommetjes))), name = D3name)
+        index += 1
+
+        
+        
     # constraints (2.7):  - Nicole
              
     # constraints (2.8):   - Hilde
@@ -108,7 +131,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     
     #LPModel.write(problem_name+str(insid)+'.lp')
     print('--------------------------------------------------------------')
-   
+    LPModel.update()
     return Projects,Employees,LPModel
 
 
