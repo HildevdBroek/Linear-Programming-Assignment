@@ -114,9 +114,19 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
                 LPModel.addConstr(((sommetjes + (sommetjes - 1)) <= lambdas), name = D6name)
             
     # constraints (2.7):  - Nicole
-    timelist = []
-    for time in TimeSetTheta:
-        timelist.append(time)
+    Bname = 'B_' + str(Project.getID())
+    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
+    
+    times = []
+    #for Project in Projects:
+     #   timey = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
+      #  times.append(timey)
+        
+       # for emp in Employees:                
+        #    busy = emp.getBusyVars()
+         #   assignment = Project.getAssignmentVars()
+          #  LPModel.addConstr(((time + assignment - 1) <= busy), name = Bname)
+        
         
         #for t2 in range(Project.getID() + 1, len(insid.getStartVars())):
          #   time2 = insid.getStartVars()[t2]
@@ -150,10 +160,13 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     ProjSkill = list(range(len(Project.getSkillRequirements())))
     
     Sname = 'S_' + str(Project.getID())
-    for emp in Employees:
-        if (EmpSkill in ProjSkill) or (ProjSkill in EmpSkill):
-            continue
-        #LPModel.addConstr(sum(emp.getSkills() * Project.getAssignmentVars()) >= Project.getSkillRequirements * sum(Project.getStartVars()))
+    
+    #for emp in Employees:
+        #if (EmpSkill in ProjSkill) or (ProjSkill in EmpSkill):
+         #   continue
+        #for Project in Projects:
+            #for skill in ProjSkill:
+                #LPModel.addConstr((sum(emp.getSkills() * Project.getAssignmentVars())) >= (Project.getSkillRequirements() * sum(Project.getStartVars())), name = Sname)
     
         #was een probeersel van eerdere decision variabelen:
                 #for emp in Employees:
@@ -178,10 +191,22 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
               
 
     # constraints (2.11):  - Nicole
+    Lname = 'L_' + str(Project.getID())
+    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
+
+    sommetjes = []
+    for Project in Projects:
+        #sommie = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
+        #sommetjes.append(sommie)
     
-                                    
+        for Proj2 in range(Project.getID() + 1, (len(sommetjes))):
+            if sommetjes[Proj2] != sommetjes:
+                continue
+            #for Proj2 in Project.getPredecessors():
+                #for Project in Projects:
+                    #LPModel.addConstr(((sum(Project.getStartVars()) for Project in Projects) <= (sum(Project.getStartVars()) for Proj2 in Projects), name = Lname)
+    
     # Construct constraints
-    
     
     LPModel.write(problem_name+str(insid)+'.lp')
     print('--------------------------------------------------------------')
