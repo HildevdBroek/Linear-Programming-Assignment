@@ -87,23 +87,25 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # constraints (2.6): - Hilde
     D3name = 'D3_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
-   # for emp in Employees:       
-   # for Project in Projects:
-    
+
     sommetjes = []
     for Project in Projects:
         sommie = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
         sommetjes.append(sommie)
     
-    index = 0
-    for Project in Projects:
-        index += 1
-        som = sommetjes[index]
-        lambdas = Project.getLambdaVars()
-        for z in range(index+1, (len(sommetjes))):
-            LPModel.addConstrs((((som[k] + (sommetjes[z][k] - 1)) <= lambdas[z]) for k in sommetjes[z]), name = D3name)
+   #     index = 0
+        for Proj2 in range(Project.getID()+1, (len(sommetjes))):
+            if sommetjes[Proj2] != sommetjes:
+                continue
+            if Proj2 not in Project.getCoincidingProject():
+                continue
+            for Project in Projects:
+                  #      som = sommetjes[index]
+                lambdas = Project.getLambdaVars()
+                      #  index += 1
+                    #    for z in range(index+1, (len(sommetjes))):
+                LPModel.addConstrs(((sommetjes + (sommetjes - 1)) <= lambdas), name = D3name)
             
-
     # constraints (2.7):  - Nicole
     timelist = []
     for time in TimeSetTheta:
