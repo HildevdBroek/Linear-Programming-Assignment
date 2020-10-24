@@ -75,15 +75,22 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     # constraints (2.4):  - Nicole
     D1name = 'D1_' + str(Project.getID())
+    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     #for Project in Projects:
-     #   LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) <= 1), name = D1name)
+     #   for time in TimeSetTheta:
+      #      if time <= Project.getDeadline():
+       #         continue
+        #    LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) <= 1), name = D1name)
         
-    
     # constraints (2.5):  - Nicole
     D2name = 'D2' + str(Project.getID())
+    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     #for Project in Projects:
-     #   LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) == 0), name = D2name)
-        
+     #   for time in TimeSetTheta:
+      #      if time > Project.getDeadline():
+       #         continue
+        #    LPModel.addConstr((sum(Project.getStartVars()[Project.getID()]) == 0), name = D2name)
+           
     # constraints (2.6): - Hilde
     D3name = 'D3_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
