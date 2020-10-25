@@ -105,27 +105,25 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     # constraints (2.8):
     C8name = 'C8' + str(emp.getID())
-    TimeSetEmp = list(range(len(emp.getAvailability())))
     for Project in Projects:
-        for Dob1 in range(Project.getID() + 1, (len(Projects))-1):
+        for Dob1 in range(Project.getID() + 1, (len(Projects))):
             Dob2 = Projects[Dob1]
-          #  for t in TimeSetEmp:
             for emp in Employees:
-                lambdas = Project.getLambdaVars()[Project.getID()+1 - Dob1]
+                lambdas = Project.getLambdaVars()[Project.getID() + 1 - Dob1]
                 Xe = Project.getAssignmentVars()[emp.getID()]
                 Xeother = Dob2.getAssignmentVars()[emp.getID()]
                 LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
     
     # constraints (2.9):
-    SkillSet = SkillSet = list(range(len(Employees[0].getSkills())))
+    SkillSet =  list(range(len(Employees[0].getSkills())))
     
     for Project in Projects:   
         for Skill in SkillSet:
-                Sname = 'S_'+ str(Project.getID()) + '_' + str(Project.getSkillRequirements()[Skill])
-                ProjSkill = int(Project.getSkillRequirements()[Skill])
-                EmpSkillAssignment = sum(int(emp.getSkills()[ProjSkill])* Project.getAssignmentVars()[emp.getID()] for emp in Employees)
-                ProjStart = sum(Project.getStartVars())
-                LPModel.addConstr(EmpSkillAssignment >= (int(Project.getSkillRequirements()[Skill])* ProjStart), name = Sname)
+            Sname = 'S_'+ str(Project.getID()) + '_' + str(Project.getSkillRequirements()[Skill])
+            ProjSkill = int(Project.getSkillRequirements()[Skill])
+            EmpSkillAssignment = sum(int(emp.getSkills()[ProjSkill])* Project.getAssignmentVars()[emp.getID()] for emp in Employees)
+            ProjStart = sum(Project.getStartVars())
+            LPModel.addConstr(EmpSkillAssignment >= (int(Project.getSkillRequirements()[Skill])* ProjStart), name = Sname)
         
     # constraints (2.10):
     C10name = 'C10_' + str(Project.getID)
