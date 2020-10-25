@@ -138,7 +138,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         for Pred0 in range(Project.getID() - 1):
             Pred0 = Project.getStartVars()
             Projectlist.append(Pred0)
-     #       LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) >= (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
+            #LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) > (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
 
     # constraints (2.11):
     Lname = 'L_' + str(Project.getID())
@@ -164,21 +164,21 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
 ####################################################################################
 
-problem_name = "ProjectScheduling"  
-timelimit = 60
+#problem_name = "ProjectScheduling"  
+#timelimit = 60
 
-instances = [1, 2, 3, 4]
+#instances = [1, 2, 3, 4]
 
-print('--> 1BK50 LP Assignment Template<--')
-print('--> Important: Uncomment these lines to start working!', problem_name)
+#print('--> 1BK50 LP Assignment Template<--')
+#print('--> Important: Uncomment these lines to start working!', problem_name)
 
-for insid in instances:          
-    print('Problem instance: ', insid)       
-    Projects,Employees = ConstructDataStructure(problem_name, insid)   
-    Projects,Employees,LPModel = Question(Projects, Employees, problem_name, insid, timelimit)  
-    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
+#for insid in instances:          
+#    print('Problem instance: ', insid)       
+#    Projects,Employees = ConstructDataStructure(problem_name, insid)   
+#    Projects,Employees,LPModel = Question(Projects, Employees, problem_name, insid, timelimit)  
+#    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
     
-    for feed in feedback:
-         print(feed)
+#    for feed in feedback:
+#         print(feed)
          
-print('--> Important: Submit your file by making it back commented!')
+#print('--> Important: Submit your file by making it back commented!')
