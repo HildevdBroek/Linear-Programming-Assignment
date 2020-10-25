@@ -63,9 +63,9 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     # constraints (2.2): - Hilde
     #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
-    Aname = 'A_' + str(emp.getID())
+    C1name = 'C1_' + str(emp.getID())
     for i in range(len(emp.getBusyVars())):
-        LPModel.addConstrs(((emp.getBusyVars()[i] <= emp.getAvailability()[i]) for emp in Employees), name = Aname)
+        LPModel.addConstrs(((emp.getBusyVars()[i] <= emp.getAvailability()[i]) for emp in Employees), name = C1name)
      
     # constraints (2.3):  - Nicole
     M = 10000
@@ -92,26 +92,17 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
             LPModel.addConstr((sum(Project.getStartVars()) == 0), name = D2name)
            
     # constraints (2.6): - Hilde
-    D6name = 'D6_' + str(Project.getID())
+    C6name = 'C6_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
 
-    sommetjes = []
     for Project in Projects:
-        sommie = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-        sommetjes.append(sommie)
-    
-   #     index = 0
-        for Proj2 in range(Project.getID() + 1, (len(sommetjes))):
-            if sommetjes[Proj2] != sommetjes:
-                continue
-            if Proj2 not in Project.getCoincidingProject():
-                continue
-            for Project in Projects:
-                  #      som = sommetjes[index]
-                lambdas = Project.getLambdaVars()
-                      #  index += 1
-                    #    for z in range(index+1, (len(sommetjes))):
-                LPModel.addConstr(((sommetjes + (sommetjes - 1)) <= lambdas), name = D6name)
+        for Proj1 in range(Project.getID() + 1, (len(Projects))):
+            Proj2 = Projects[Proj1]
+            for t in TimeSetTheta:
+                lambdas = Project.getLambdaVars()[Proj2.getID()-Project.getID() -1]
+                somm1 = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) 
+                somm2 = sum(Proj2.getStartVars()[max(0,t-Proj2.getDuration()+1):t+1])
+                LPModel.addConstr(((somm1 + (somm2 - 1)) <= lambdas), name = C6name)
             
     # constraints (2.7):  - Nicole
     Bname = 'B_' + str(Project.getID())
@@ -129,7 +120,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     # constraints (2.8):   - Hilde
     TimeSetEmp = list(range(len(emp.getAvailability())))
-    D8name = 'D8' + str(emp.getID())
+    C8name = 'C8' + str(emp.getID())
     Double = []
     for Project in Projects:
         Dob = (sum(Project.getStartTime()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
@@ -142,7 +133,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
            #     for employee in Employees: 
                     #lambdas = Project.getLambdaVars()                          
          #   for projnext in range (proj+1, len(Projects)):
-            #        LPModel.addConstr(((Double[Dob].getAssignmentVars() + Double[Dob1].getAssignmentVars() + Project.getLambdaVars() ) <= 2), name = D8name)
+            #        LPModel.addConstr(((Double[Dob].getAssignmentVars() + Double[Dob1].getAssignmentVars() + Project.getLambdaVars() ) <= 2), name = C8name)
 
     
     # constraints (2.9):  - Nicole
@@ -167,7 +158,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         #intersect = len(intersection(skills, Employeesskills))
         
     # constraints (2.10):  - Hilde
-    d10name = 'D10_' + str(Project.getID)
+    C10name = 'C10_' + str(Project.getID)
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     Projectlist = []
     for Project in Projects:
@@ -176,7 +167,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         for Pred0 in range(Project.getID()-1):
             Pred0 = Project.getStartVars()
             Projectlist.append(Pred0)
-          #  LPModel.addConstrs(((Projectlist >= Projectlist[Pred0]) for Project in Projects), name = d10name )
+          #  LPModel.addConstrs(((Projectlist >= Projectlist[Pred0]) for Project in Projects), name = C10name )
           #  print("pred")
               
 
