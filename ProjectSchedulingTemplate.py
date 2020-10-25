@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct  3 11:05:33 2020
-
-@author: mfirat
-"""
-
 import gurobipy as grb
 import pandas as pd
 import time
@@ -104,65 +97,45 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
                 LPModel.addConstr(((somm1 + (somm2 - 1)) <= lambdas), name = C6name)
             
     # constraints (2.7):
-    TimeSetTheta = list(range(len(Employees[0].getAvailability())))
+    TimeSet = list(range(len(Employees[0].getAvailability())))
     for emp in Employees:
         for Project in Projects:
-            for t in TimeSetTheta:
-                Thetasum = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1):t+1])
-                nm = 'bsyt_'+str(Project.getID())+'_'+str(emp.getID())+'_'+str(t)
-                LPModel.addConstr(Thetasum+Project.getAssignmentVars()[emp.getID()]-1 <= emp.getBusyVars()[t],nm)
+            for t in TimeSet:
+                Theta = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1])
+                Bname = 'B_' + str(Project.getID()) + '_' + str(emp.getID()) + '_' + str(t)
+                LPModel.addConstr(Theta + Project.getAssignmentVars()[emp.getID()] - 1 <= emp.getBusyVars()[t], name = Bname)
 
     # constraints (2.8):
     C8name = 'C8' + str(emp.getID())
     TimeSetEmp = list(range(len(emp.getAvailability())))
     for Project in Projects:
-        for Dob1 in range(Project.getID()+1, (len(Projects))):
+        for Dob1 in range(Project.getID() + 1, (len(Projects))):
             Dob2 = Projects[Dob1]
             for t in TimeSetEmp:
                 lambdas = Project.getLambdaVars()
                 Xe = Project.getAssignmentVars()
                 Xeother = Dob2.getAssignmentVars()
-                LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
+                #LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
     
     # constraints (2.9):
     SkillSet = SkillSet = list(range(len(Employees[0].getSkills())))
     
     for Project in Projects:   
         for Skill in SkillSet:
-                Sname = 'S'+ str(Project.getID()) + '_' + str(Project.getSkillRequirements()[Skill])
+                Sname = 'S_'+ str(Project.getID()) + '_' + str(Project.getSkillRequirements()[Skill])
                 ProjSkill = int(Project.getSkillRequirements()[Skill])
                 EmpSkillAssignment = sum(int(emp.getSkills()[ProjSkill])* Project.getAssignmentVars()[emp.getID()] for emp in Employees)
                 ProjStart = sum(Project.getStartVars())
                 LPModel.addConstr(EmpSkillAssignment >= (int(Project.getSkillRequirements()[Skill])* ProjStart), name = Sname)
-   
-    #EmpSkill = list(range(len(emp.getSkills())))
-    #ProjSkill = list(range(len(Project.getSkillRequirements())))
-    
-    #Sname = 'S_' + str(Project.getID())
-    
-   # for emp in Employees:
-    #    som = sum(emp.getSkills() * Project.getAssignmentVars())
-        
-    #for Project in Projects:
-     #   for skill in ProjSkill:
-      #      LPModel.addConstr((som) >= (Project.getSkillRequirements() * sum(Project.getStartVars())), name = Sname)
-    
-        #was een probeersel van eerdere decision variabelen:
-                #for emp in Employees:
-        #Employeesskills = list(range(len(emp.getSkills())))
-        #print ("employeeskills")
-                #skills = list(range(len(Project.getSkillRequirements())))
-                   
-        #intersect = len(intersection(skills, Employeesskills))
         
     # constraints (2.10):
     C10name = 'C10_' + str(Project.getID)
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     Projectlist = []
     for Project in Projects:
-        Pred = (sum(Project.getPredecessors()[max(0,t - Project.getDuration() + 1):t+1]) for t in TimeSetTheta)
+        Pred = (sum(Project.getPredecessors()[max(0, t - Project.getDuration() + 1):t+1]) for t in TimeSetTheta)
         Projectlist.append(Pred)
-        for Pred0 in range(Project.getID()-1):
+        for Pred0 in range(Project.getID() - 1):
             Pred0 = Project.getStartVars()
             Projectlist.append(Pred0)
      #       LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) >= (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
