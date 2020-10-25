@@ -187,7 +187,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     sommetjes = []
     for Project in Projects:
         for Proj2 in range(Project.getID() + 1, (len(sommetjes))):
-            if sommetjes[Proj2] != sommetjes:
+            if Project in sommetjes[Proj2]:
                 continue
             for Proj2 in Project.getPredecessors():
                 proj = sum(Project.getStartVars() for Project in Projects)
