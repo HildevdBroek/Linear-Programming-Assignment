@@ -112,7 +112,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         for t in TimeSetTheta:
             times = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) 
             #for emp in Employees:
-             #   LPModel.addConstr((times + Project.getAssignmentVars() - 1 <= emp.getBusyVars()), name = Bname)
+            #    LPModel.addConstr(((times + Project.getAssignmentVars()[emp.getID()] - 1) <= emp.getBusyVars()), name = Bname)
 
 
     # constraints (2.8):   - Hilde
@@ -126,7 +126,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
                 lambdas = Project.getLambdaVars()
                 Xe = Project.getAssignmentVars()[emp.getID()]
                 Xeother = Dob2.getAssignmentVars()[emp.getID()]
-                LPModel.addConstrs((((Xe + Xeother + lambdas) for emp in Employees ) <= 2), name = C8name)
+             #   LPModel.addConstrs((((Xe + Xeother + lambdas) for emp in Employees ) <= 2), name = C8name)
             
            # Dob1 = Project.getStartTime()
            # Dob = (sum(Project.getStartTime()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
@@ -166,13 +166,13 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     Projectlist = []
     for Project in Projects:
-        Pred = (sum(Project.getPredecessors()[max(0,t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
+        Pred = (sum(Project.getPredecessors()[max(0,t - Project.getDuration() + 1):t+1]) for t in TimeSetTheta)
         Projectlist.append(Pred)
         for Pred0 in range(Project.getID()-1):
             Pred0 = Project.getStartVars()
             Projectlist.append(Pred0)
-          #  LPModel.addConstrs(((Projectlist >= Projectlist[Pred0]) for Project in Projects), name = C10name )
-          #  print("pred")
+      #      LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) >= (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
+
               
 
     # constraints (2.11):  - Nicole
@@ -186,7 +186,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
                 continue
             for Proj2 in Project.getPredecessors():
                 proj = sum(Project.getStartVars() for Project in Projects)
-                proj2 = sum(Project.getStartVars() for Proj2 in range(Project.getID() + 1, (len(sommetjes))))
+                proj2 = sum(Project.getStartVars() for Proj2 in list(range(Project.getID()) + 1, (len(sommetjes))))
                 LPModel.addConstr(proj <= proj2, name = Lname)
     
     # Construct constraints
