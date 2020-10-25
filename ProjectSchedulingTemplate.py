@@ -101,7 +101,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         sommetjes.append(sommie)
     
    #     index = 0
-        for Proj2 in range(Project.getID()+1, (len(sommetjes))):
+        for Proj2 in range(Project.getID() + 1, (len(sommetjes))):
             if sommetjes[Proj2] != sommetjes:
                 continue
             if Proj2 not in Project.getCoincidingProject():
@@ -118,25 +118,15 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     
     times = []
-    #for Project in Projects:
-     #   timey = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-      #  times.append(timey)
+    for Project in Projects:
+        timey = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
+        times.append(timey)
         
-       # for emp in Employees:                
-        #    busy = emp.getBusyVars()
-         #   assignment = Project.getAssignmentVars()
-          #  LPModel.addConstr(((time + assignment - 1) <= busy), name = Bname)
-        
-        
-        #for t2 in range(Project.getID() + 1, len(insid.getStartVars())):
-         #   time2 = insid.getStartVars()[t2]
-          #  if time2.getStartVars() == (Project.getStartVars()[max(0, time - Project.getDuration() + 1]):
-           #     continue
-            #for Project in Projects:
-             #   Kname = 'K_' + str(Project.getID()) + str(time.getID()) + str(time2.getID())
-               # LPModel.addConstr(sum(Project.getStartVars()) + Project.getAssignmentVars() - 1 <= emp.getBusyVars(), name = Kname)
-        
-             
+        for emp in Employees:                
+            busy = emp.getBusyVars()
+            assignment = Project.getAssignmentVars()
+            #LPModel.addConstr(((times + Project.getAssignmentVars() - 1) <= emp.getBusyVars()), name = Bname)
+
     # constraints (2.8):   - Hilde
     TimeSetEmp = list(range(len(emp.getAvailability())))
     D8name = 'D8' + str(emp.getID())
@@ -161,12 +151,12 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     
     Sname = 'S_' + str(Project.getID())
     
-    #for emp in Employees:
-        #if (EmpSkill in ProjSkill) or (ProjSkill in EmpSkill):
-         #   continue
-        #for Project in Projects:
-            #for skill in ProjSkill:
-                #LPModel.addConstr((sum(emp.getSkills() * Project.getAssignmentVars())) >= (Project.getSkillRequirements() * sum(Project.getStartVars())), name = Sname)
+   # for emp in Employees:
+    #    som = sum(emp.getSkills() * Project.getAssignmentVars())
+        
+    #for Project in Projects:
+     #   for skill in ProjSkill:
+      #      LPModel.addConstr((som) >= (Project.getSkillRequirements() * sum(Project.getStartVars())), name = Sname)
     
         #was een probeersel van eerdere decision variabelen:
                 #for emp in Employees:
@@ -196,15 +186,13 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     sommetjes = []
     for Project in Projects:
-        #sommie = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-        #sommetjes.append(sommie)
-    
         for Proj2 in range(Project.getID() + 1, (len(sommetjes))):
             if sommetjes[Proj2] != sommetjes:
                 continue
-            #for Proj2 in Project.getPredecessors():
-                #for Project in Projects:
-                    #LPModel.addConstr(((sum(Project.getStartVars()) for Project in Projects) <= (sum(Project.getStartVars()) for Proj2 in Projects), name = Lname)
+            for Proj2 in Project.getPredecessors():
+                proj = sum(Project.getStartVars() for Project in Projects)
+                proj2 = sum(Project.getStartVars() for Proj2 in range(Project.getID() + 1, (len(sommetjes))))
+                LPModel.addConstr(proj <= proj2, name = Lname)
     
     # Construct constraints
     
