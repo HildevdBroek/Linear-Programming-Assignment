@@ -65,7 +65,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     for Project in Projects:
         LPModel.addConstr((sum(Project.getAssignmentVars()) <= (M * sum(Project.getStartVars()))), name = Mname)
 
-    # constraints (2.4, 2.5):
+    # constraints (2.4):
     D1name = 'D1_' + str(Project.getID())
     D2name = 'D2' + str(Project.getID())
 
@@ -107,17 +107,17 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     C8name = 'C8' + str(emp.getID())
     TimeSetEmp = list(range(len(emp.getAvailability())))
     for Project in Projects:
-        for Dob1 in range(Project.getID() + 1, (len(Projects)) - 1):
+        for Dob1 in range(Project.getID() + 1, (len(Projects))-1):
             Dob2 = Projects[Dob1]
           #  for t in TimeSetEmp:
-            #for emp in Employees:
-            lambdas = Project.getLambdaVars()[Project.getID() + 1 - Dob1]
-            Xe = Project.getAssignmentVars()[emp.getID()]
-            Xeother = Dob2.getAssignmentVars()[emp.getID()]
-            LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
+            for emp in Employees:
+                lambdas = Project.getLambdaVars()[Project.getID()+1 - Dob1]
+                Xe = Project.getAssignmentVars()[emp.getID()]
+                Xeother = Dob2.getAssignmentVars()[emp.getID()]
+                LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
     
     # constraints (2.9):
-    SkillSet = list(range(len(Employees[0].getSkills())))
+    SkillSet = SkillSet = list(range(len(Employees[0].getSkills())))
     
     for Project in Projects:   
         for Skill in SkillSet:
@@ -166,21 +166,21 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
 ####################################################################################
 
-#problem_name = "ProjectScheduling"  
-#timelimit = 60
+problem_name = "ProjectScheduling"  
+timelimit = 60
 
-#instances = [1, 2, 3, 4]
+instances = [1, 2, 3, 4]
 
 #print('--> 1BK50 LP Assignment Template<--')
 #print('--> Important: Uncomment these lines to start working!', problem_name)
 
-#for insid in instances:          
-#    print('Problem instance: ', insid)       
-#    Projects,Employees = ConstructDataStructure(problem_name, insid)   
-#    Projects,Employees,LPModel = Question(Projects, Employees, problem_name, insid, timelimit)  
-#    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
+for insid in instances:          
+    print('Problem instance: ', insid)       
+    Projects,Employees = ConstructDataStructure(problem_name, insid)   
+    Projects,Employees,LPModel = Question(Projects, Employees, problem_name, insid, timelimit)  
+    LPModel,Projects,Employees,feedback,fgrade,varscore, sgrade = SolveLPMOdel(LPModel, Projects, Employees, timelimit, insid)
     
-#    for feed in feedback:
-#         print(feed)
+    for feed in feedback:
+         print(feed)
          
 #print('--> Important: Submit your file by making it back commented!')
