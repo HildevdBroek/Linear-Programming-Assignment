@@ -141,10 +141,20 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
     
     # constraints (2.9):  - Nicole
-    EmpSkill = list(range(len(emp.getSkills())))
-    ProjSkill = list(range(len(Project.getSkillRequirements())))
+    SkillSet = SkillSet = list(range(len(Employees[0].getSkills())))
     
-    Sname = 'S_' + str(Project.getID())
+    for Project in Projects:   
+        for Skill in SkillSet:
+                Sname = 'S'+ str(Project.getID()) + '_' + str(Project.getSkillRequirements()[Skill])
+                ProjSkill = int(Project.getSkillRequirements()[Skill])
+                EmpSkillAssignment = sum(int(emp.getSkills()[ProjSkill])* Project.getAssignmentVars()[emp.getID()] for emp in Employees)
+                ProjStart = sum(Project.getStartVars())
+                LPModel.addConstr(EmpSkillAssignment >= (int(Project.getSkillRequirements()[Skill])* ProjStart), name = Sname)
+   
+    #EmpSkill = list(range(len(emp.getSkills())))
+    #ProjSkill = list(range(len(Project.getSkillRequirements())))
+    
+    #Sname = 'S_' + str(Project.getID())
     
    # for emp in Employees:
     #    som = sum(emp.getSkills() * Project.getAssignmentVars())
