@@ -116,15 +116,22 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
 
 
     # constraints (2.8):   - Hilde
-    TimeSetEmp = list(range(len(emp.getAvailability())))
     C8name = 'C8' + str(emp.getID())
+    TimeSetEmp = list(range(len(emp.getAvailability())))
     Double = []
     for Project in Projects:
-        Dob = (sum(Project.getStartTime()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-        Double.append(Dob)
-        for Dob1 in range(Project.getID()+1):
-            Dob1 = Project.getStartTime()
-            Double.append(Dob1)
+        for Dob1 in range(Project.getID()+1, (len(Projects))):
+            Dob2 = Projects[Dob1]
+            for t in TimeSetEmp:
+                lambdas = Project.getLambdaVars()
+                Xe = Project.getAssignmentVars()[emp.getID()]
+                Xeother = Dob2.getAssignmentVars()[emp.getID()]
+                LPModel.addConstrs((((Xe + Xeother + lambdas) for emp in Employees ) <= 2), name = C8name)
+            
+           # Dob1 = Project.getStartTime()
+           # Dob = (sum(Project.getStartTime()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
+           # Double.append(Dob)
+           # Double.append(Dob1)
           #  if (Double[Dob] in Double[Dob1]) or (Double[Dob1] in Double[Dob]):
            #     continue
            #     for employee in Employees: 
