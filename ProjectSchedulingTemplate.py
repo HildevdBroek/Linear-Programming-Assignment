@@ -62,7 +62,6 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     # Construct constraints        
 
     # constraints (2.2): - Hilde
-    #LPModel.addConstr((emp.getAvailability()[emp]*emp.setBusyVars()[emp] for emp in list(range(len(emp.getAvailability())))) <= emp.getAvailability(), 'A_'+str(emp.getID()))
     C1name = 'C1_' + str(emp.getID())
     for i in range(len(emp.getBusyVars())):
         LPModel.addConstrs(((emp.getBusyVars()[i] <= emp.getAvailability()[i]) for emp in Employees), name = C1name)
@@ -105,40 +104,25 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
                 LPModel.addConstr(((somm1 + (somm2 - 1)) <= lambdas), name = C6name)
             
     # constraints (2.7):  - Nicole
-    Bname = 'B_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
-    
-    for Project in Projects:
-        for t in TimeSetTheta:
-            times = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) 
-            #for emp in Employees:
-            #    LPModel.addConstr(((times + Project.getAssignmentVars()[emp.getID()] - 1) <= emp.getBusyVars()), name = Bname)
-
+    for emp in Employees:
+        for Project in Projects:
+            for t in TimeSetTheta:
+                Thetasum = sum(Project.getStartVars()[max(0,t-Project.getDuration()+1):t+1])
+                nm = 'bsyt_'+str(Project.getID())+'_'+str(emp.getID())+'_'+str(t)
+                LPModel.addConstr(Thetasum+Project.getAssignmentVars()[emp.getID()]-1 <= emp.getBusyVars()[t],nm)
 
     # constraints (2.8):   - Hilde
     C8name = 'C8' + str(emp.getID())
     TimeSetEmp = list(range(len(emp.getAvailability())))
-    Double = []
     for Project in Projects:
         for Dob1 in range(Project.getID()+1, (len(Projects))):
             Dob2 = Projects[Dob1]
             for t in TimeSetEmp:
                 lambdas = Project.getLambdaVars()
-                Xe = Project.getAssignmentVars()[emp.getID()]
-                Xeother = Dob2.getAssignmentVars()[emp.getID()]
-             #   LPModel.addConstrs((((Xe + Xeother + lambdas) for emp in Employees ) <= 2), name = C8name)
-            
-           # Dob1 = Project.getStartTime()
-           # Dob = (sum(Project.getStartTime()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-           # Double.append(Dob)
-           # Double.append(Dob1)
-          #  if (Double[Dob] in Double[Dob1]) or (Double[Dob1] in Double[Dob]):
-           #     continue
-           #     for employee in Employees: 
-                    #lambdas = Project.getLambdaVars()                          
-         #   for projnext in range (proj+1, len(Projects)):
-            #        LPModel.addConstr(((Double[Dob].getAssignmentVars() + Double[Dob1].getAssignmentVars() + Project.getLambdaVars() ) <= 2), name = C8name)
-
+                Xe = Project.getAssignmentVars()
+                Xeother = Dob2.getAssignmentVars()
+                LPModel.addConstr(((Xe + Xeother + lambdas) <= 2 ), name = C8name)
     
     # constraints (2.9):  - Nicole
     SkillSet = SkillSet = list(range(len(Employees[0].getSkills())))
@@ -181,7 +165,7 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
         for Pred0 in range(Project.getID()-1):
             Pred0 = Project.getStartVars()
             Projectlist.append(Pred0)
-      #      LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) >= (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
+     #       LPModel.addConstrs((((Projectlist - Projectlist[Pred0]) >= (Project.getDuration() - (len(Employees[0].getAvailability()))(*(2 - sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) - sum(Pred.getStartVars()[max(0,t-Pred.getDuration()+1):t+1]))))) for t in TimeSetTheta), name = C10name )
 
               
 
