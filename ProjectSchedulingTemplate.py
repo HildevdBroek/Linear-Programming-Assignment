@@ -108,15 +108,12 @@ def Question(Projects, Employees, problem_name, insid, timelimit):
     Bname = 'B_' + str(Project.getID())
     TimeSetTheta = list(range(len(Employees[0].getAvailability())))
     
-    times = []
     for Project in Projects:
-        timey = (sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t]) for t in TimeSetTheta)
-        times.append(timey)
-        
-        for emp in Employees:                
-            busy = emp.getBusyVars()
-            assignment = Project.getAssignmentVars()
-            #LPModel.addConstr(((times + Project.getAssignmentVars() - 1) <= emp.getBusyVars()), name = Bname)
+        for t in TimeSetTheta:
+            times = sum(Project.getStartVars()[max(0, t - Project.getDuration() + 1):t+1]) 
+            #for emp in Employees:
+             #   LPModel.addConstr((times + Project.getAssignmentVars() - 1 <= emp.getBusyVars()), name = Bname)
+
 
     # constraints (2.8):   - Hilde
     TimeSetEmp = list(range(len(emp.getAvailability())))
